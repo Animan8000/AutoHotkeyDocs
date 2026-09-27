@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>StatusbarGetText - Syntax &amp; Usage | AutoHotkey</title>
-<meta name="description" content="The StatusbarGetText command retrieves the text from a standard status bar control." />
+<title>StatusbarGetText - Syntax &amp; Usage | AutoHotkey v2</title>
+<meta name="description" content="The StatusbarGetText function retrieves the text from a standard status bar control." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link href="../static/theme.css" rel="stylesheet" type="text/css" />
@@ -14,39 +14,46 @@
 
 <p>Retrieves the text from a standard status bar control.</p>
 
-<pre class="Syntax"><span class="func">StatusBarGetText</span>, OutputVar <span class="optional">, Part#, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
+<pre class="Syntax">Text := <span class="func">StatusBarGetText</span>(<span class="optional">Part#, WinTitle, WinText, ExcludeTitle, ExcludeText</span>)</pre>
 <h2 id="Parameters">Parameters</h2>
 <dl>
 
-  <dt>OutputVar</dt>
-  <dd><p>The name of the output variable in which to store the retrieved text.</p></dd>
-
   <dt>Part#</dt>
-  <dd><p>If blank or omitted, it defaults to 1, which is usually the part that contains the text of interest. Otherwise, specify the part number of the bar to retrieve, which can be an <a href="../Variables.htm#Expressions">expression</a>.</p></dd>
+  <dd>
+    <p>Type: <a href="../Concepts.htm#numbers">Integer</a></p>
+    <p>If omitted, it defaults to 1, which is usually the part that contains the text of interest. Otherwise, specify the part number of the bar to retrieve.</p>
+  </dd>
 
   <dt>WinTitle, WinText, ExcludeTitle, ExcludeText</dt>
   <dd>
-    <p>If each of these is blank or omitted, the <a href="../misc/WinTitle.htm#LastFoundWindow">Last Found Window</a> will be used. Otherwise, specify for <em>WinTitle</em> a <a href="../misc/WinTitle.htm">window title or other criteria</a> to identify the target window and/or for <em>WinText</em> a substring from a single text element of the target window (as revealed by the included Window Spy utility). Hidden text elements are detected if <a href="DetectHiddenText.htm">DetectHiddenText</a> has been turned on. Windows whose title or text contains <em>ExcludeTitle</em> or <em>ExcludeText</em> will not be considered.</p>
+    <p>Type: <a href="../Concepts.htm#strings">String</a>, <a href="../Concepts.htm#numbers">Integer</a> or <a href="../Concepts.htm#objects">Object</a></p>
+    <p>If each of these is blank or omitted, the <a href="../misc/WinTitle.htm#LastFoundWindow">Last Found Window</a> will be used. Otherwise, specify for <em>WinTitle</em> a <a href="../misc/WinTitle.htm">window title or other criteria</a> to identify the target window and/or for <em>WinText</em> a substring from a single text element of the target window (as revealed by the included Window Spy utility).</p>
+    <p><em>ExcludeTitle</em> and <em>ExcludeText</em> can be used to exclude one or more windows by their title or text. Their specification is similar to <em>WinTitle</em> and <em>WinText</em>, except that <em>ExcludeTitle</em> does not recognize any criteria other than the window title.</p>
+    <p>Window titles and text are case-sensitive. By default, hidden windows are not detected and hidden text elements are detected, unless changed with <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> and <a href="DetectHiddenText.htm">DetectHiddenText</a>; however, when using <a href="../misc/WinTitle.htm#ahk_id">pure HWNDs</a>, hidden windows are always detected regardless of DetectHiddenWindows. By default, a window title can contain <em>WinTitle</em> or <em>ExcludeTitle</em> anywhere inside it to be a match, unless changed with <a href="SetTitleMatchMode.htm">SetTitleMatchMode</a>.</p>
   </dd>
 
 </dl>
 
+<h2 id="Return_Value">Return Value</h2>
+<p>Type: <a href="../Concepts.htm#strings">String</a></p>
+<p>This function returns the text from a single part of the status bar control.</p>
+
 <h2 id="Error_Handling">Error Handling</h2>
-<p><span class="ver">[v1.1.04+]</span>: This command is able to throw an exception on failure. For more information, see <a href="Catch.htm#RuntimeErrors">Runtime Errors</a>.</p>
-<p><a href="../misc/ErrorLevel.htm">ErrorLevel</a> is set to 1 if there is a problem or 0 otherwise. If there was a problem, <em>OutputVar</em> is also made blank.</p>
+<p>A <a href="Error.htm#TargetError">TargetError</a> is thrown if the target window could not be found or does not contain a standard status bar.</p>
+<p>An <a href="Error.htm#OSError">OSError</a> is thrown if there was a problem sending the SB_GETPARTS message or no reply was received within 2000&nbsp;ms, or if memory could not be allocated within the process which owns the status bar.</p>
+
 <h2 id="Remarks">Remarks</h2>
-<p>This command attempts to read the first <em>standard</em> status bar on a window (Microsoft common control: msctls_statusbar32). Some programs use their own status bars or special versions of the MS common control, in which case the text cannot be retrieved.</p>
+<p>This function attempts to read the first <em>standard</em> status bar on a window (Microsoft common control: msctls_statusbar32). Some programs use their own status bars or special versions of the MS common control, in which case the text cannot be retrieved.</p>
 <p>Rather than using StatusBarGetText in a loop, it is usually more efficient to use <a href="StatusBarWait.htm">StatusBarWait</a>, which contains optimizations that avoid the overhead of repeated calls to StatusBarGetText.</p>
-<p>Window titles and text are case-sensitive. Hidden windows are not detected unless <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> has been turned on.</p>
 
 <h2 id="Related">Related</h2>
 <p><a href="StatusBarWait.htm">StatusBarWait</a>, <a href="WinGetTitle.htm">WinGetTitle</a>, <a href="WinGetText.htm">WinGetText</a>, <a href="ControlGetText.htm">ControlGetText</a></p>
 <h2 id="Examples">Examples</h2>
 <div class="ex" id="ExBasic">
 <p><a class="ex_number" href="#ExBasic"></a> Retrieves and analyzes the text from the first part of a status bar.</p>
-<pre>StatusBarGetText, RetrievedText, 1, Search Results
+<pre>RetrievedText := StatusBarGetText(1, "Search Results")
 if InStr(RetrievedText, "found")
-    MsgBox, Search results have been found.</pre>
+    MsgBox "Search results have been found."</pre>
 </div>
 
 </body>

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>#SingleInstance - Syntax &amp; Usage | AutoHotkey</title>
+<title>#SingleInstance - Syntax &amp; Usage | AutoHotkey v2</title>
 <meta name="description" content="The #SingleInstance directive determines whether a script is allowed to run again when it is already running." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,8 +20,9 @@
 
   <dt>ForceIgnorePromptOff</dt>
   <dd>
-    <p>If omitted, it defaults to <em>Prompt</em>. Otherwise, specify one of the following words:</p>
-    <p><strong>Force:</strong> Skips the dialog box and replaces the old instance automatically, which is similar in effect to the <a href="Reload.htm">Reload</a> command.</p>
+    <p>Type: <a href="../Concepts.htm#strings">String</a></p>
+    <p>If omitted, it defaults to <em>Force</em>. Otherwise, specify one of the following words:</p>
+    <p><strong>Force:</strong> Skips the dialog box and replaces the old instance automatically, which is similar in effect to the <a href="Reload.htm">Reload</a> function.</p>
     <p><strong>Ignore:</strong> Skips the dialog box and leaves the old instance running. In other words, attempts to launch an already-running script are ignored.</p>
     <p><strong>Prompt:</strong> Displays a dialog box asking whether to keep the old instance or replace it with the new one.</p>
     <p><strong>Off:</strong> Allows multiple instances of the script to run concurrently.</p>
@@ -29,8 +30,8 @@
 
 </dl>
 <h2 id="Remarks">Remarks</h2>
-<p>If this directive is unspecified in a script containing <a href="../Hotkeys.htm">hotkeys</a>, <a href="../Hotstrings.htm">hotstrings</a>, <a href="_Persistent.htm">#Persistent</a>, <a href="OnMessage.htm">OnMessage()</a>, or <a href="Gui.htm">Gui</a>, it will behave as though set to <em>Prompt</em>. In any other script, it will behave as though set to <em>Off</em>. This behavior can be disabled or modified as described above.</p>
-<p>This directive is ignored when any of the following <a href="../Scripts.htm#cmd">command line switches</a> are used: /force /f /restart /r</p>
+<p>If this directive is unspecified in a script, it will behave as though set to <em>Prompt</em>.</p>
+<p>This directive is ignored when any of the following <a href="../Scripts.htm#cmd">command line switches</a> are used: /force /restart</p>
 <p>Like other directives, #SingleInstance cannot be executed conditionally.</p>
 
 <h2 id="Limitations">Limitations</h2>
@@ -48,7 +49,7 @@
 <p>If multiple instances of the script are started simultaneously, they may fail to detect each other or may all target the same previous instance. This would result in multiple instances of the script starting.</p>
 
 <h2 id="Related">Related</h2>
-<p><a href="Reload.htm">Reload</a>, <a href="_Persistent.htm">#Persistent</a></p>
+<p><a href="Reload.htm">Reload</a></p>
 <h2 id="Examples">Examples</h2>
 <div class="ex" id="ExBasic">
 <p><a class="ex_number" href="#ExBasic"></a> Skips the dialog box and replaces the old instance automatically.</p>

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>Regular Expressions (RegEx) - Quick Reference | AutoHotkey</title>
+<title>Regular Expressions (RegEx) - Quick Reference | AutoHotkey v2</title>
 <meta name="description" content="This page covers options, commonly used symbols and syntax which can be used inside a regular expression." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -68,15 +68,7 @@
   </tr>
   <tr id="opt_extra">
     <td class="center bold">X</td>
-    <td>PCRE_EXTRA. Enables PCRE features that are incompatible with Perl. Currently, the only such feature is that any backslash in a pattern that is followed by a letter that has no special meaning causes the match to fail and ErrorLevel to be set accordingly. This option helps reserve unused backslash sequences for future use. Without this option, a backslash followed by a letter with no special meaning is treated as a literal (e.g. \g and g are both recognized as a literal g). Regardless of this option, non-alphabetic backslash sequences that have no special meaning are always treated as literals (e.g. \/ and / are both recognized as forward-slash).</td>
-  </tr>
-  <tr id="opt_P">
-    <td class="center bold">P</td>
-    <td>Position mode. This causes RegExMatch() to yield the position and length of the match and its subpatterns rather than their matching substrings. For details, see <a href="../lib/RegExMatch.htm#PosMode">OutputVar</a>.</td>
-  </tr>
-  <tr id="opt_O">
-    <td class="center bold">O</td>
-    <td>Object mode. <span class="ver">[v1.1.05+]</span>: This causes RegExMatch() to yield all information of the match and its subpatterns to a <a href="../lib/RegExMatch.htm#MatchObject">match object</a> in OutputVar. For details, see <a href="../lib/RegExMatch.htm#ObjectMode">OutputVar</a>.</td>
+    <td>PCRE_EXTRA. Enables PCRE features that are incompatible with Perl. Currently, the only such feature is that any backslash in a pattern that is followed by a letter that has no special meaning causes an exception to be thrown. This option helps reserve unused backslash sequences for future use. Without this option, a backslash followed by a letter with no special meaning is treated as a literal (e.g. \g and g are both recognized as a literal g). Regardless of this option, non-alphabetic backslash sequences that have no special meaning are always treated as literals (e.g. \/ and / are both recognized as forward-slash).</td>
   </tr>
   <tr id="Study">
     <td class="center bold">S</td>
@@ -86,17 +78,20 @@
     <td class="center bold">C</td>
     <td>Enables the auto-callout mode. See <a href="RegExCallout.htm#auto">Regular Expression Callouts</a> for more info.</td>
   </tr>
+  <tr id="NEWLINE_ANY">
+    <td class="center bold">`a</td>
+    <td><p>Enables recognition of additional newline markers. By default, only `r`n, `n and `r are recognized. With this option enabled, `v/VT/vertical tab/chr(0xB), `f/FF/formfeed/chr(0xC), NEL/next-line/chr(0x85), LS/line separator/chr(0x2028) and PS/paragraph separator/chr(0x2029) are also recognized.</p>
+      <p>The `a, `n and `r options affect the behavior of <a href="#anchor">anchors (^ and $)</a> and the <a href="#dot">dot/period pattern</a>.</p>
+      <p>`a also puts (*BSR_UNICODE) into effect, which causes \R to match any kind of newline. By default, \R matches `n, `r and `r`n; this behaviour can be restored by combining options as follows: `a)(*BSR_ANYCRLF)</p>
+    </td>
+  </tr>
   <tr id="opt_esc_n">
     <td class="center bold">`n</td>
-    <td>Switches from the default newline character (`r`n) to a solitary linefeed (`n), which is the standard on UNIX systems. The chosen newline character affects the behavior of <a href="#anchor">anchors (^ and $)</a> and the <a href="#dot">dot/period pattern</a>.</td>
+    <td>Causes a solitary linefeed (`n) to be the only recognized newline marker (see above).</td>
   </tr>
   <tr id="opt_esc_r">
     <td class="center bold">`r</td>
-    <td>Switches from the default newline character (`r`n) to a solitary carriage return (`r).</td>
-  </tr>
-  <tr id="NEWLINE_ANY">
-    <td class="center bold">`a</td>
-    <td><span class="ver">[v1.0.46.06+]</span>: `a recognizes any type of newline, namely `r, `n, `r`n, `v/VT/vertical tab/chr(0xB), `f/FF/formfeed/chr(0xC), and NEL/next-line/chr(0x85). <span class="ver">[v1.0.47.05+]</span>: Newlines can be restricted to only CR, LF, and CRLF by instead specifying (*ANYCRLF) in uppercase at the beginning of the pattern (after the options); e.g. <span class="regex">im)(*ANYCRLF)^abc$</span>.</td>
+    <td>Causes a solitary carriage return (`r) to be the only recognized newline marker (see above).</td>
   </tr>
 </table>
 <p class="note"><strong>Note:</strong> Spaces and tabs may optionally be used to separate each option from the next.</p>
@@ -109,7 +104,7 @@
   </tr>
 	<tr id="dot">
 		<td class="center bold">.</td>
-		<td>By default, a dot matches any single character which is not part of a newline (`r`n) sequence, but this can be changed by using the <a href="#opt_s">DotAll (s)</a>, <a href="#opt_esc_n">linefeed (`n)</a>, <a href= "#opt_esc_r">carriage return (`r)</a>, <a href="#NEWLINE_ANY">`a or (*ANYCRLF)</a> options. For example, <span class="regex">ab.</span> matches <span class="subj">abc</span> and <span class="subj">abz</span> and <span class="subj">ab_</span>.</td>
+		<td>By default, a dot matches any single character except `r (carriage return) or `n (linefeed), but this can be changed by using the <a href="#opt_s">DotAll (s)</a>, <a href="#opt_esc_n">linefeed (`n)</a>, <a href="#opt_esc_r">carriage return (`r)</a>, or <a href="#NEWLINE_ANY">`a</a> options. For example, <span class="regex">ab.</span> matches <span class="subj">abc</span> and <span class="subj">abz</span> and <span class="subj">ab_</span>.</td>
 	</tr>
 	<tr>
 		<td class="center bold">*</td>
@@ -174,29 +169,29 @@
 	    <ul>
 	      <li>Determine the order of evaluation. For example, <span class="regex">(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur)day</span> matches the name of any day.</li>
 	      <li>Apply <strong>*</strong>, <strong>?</strong>, <strong>+</strong>, or <strong>{min,max}</strong> to a <em>series</em> of characters rather than just one. For example, <span class="regex">(abc)+</span> matches one or more occurrences of the string "abc"; thus it matches <span class="subj">abcabc</span>123 but not ab123 or bc123.</li>
-          <li id="capture">Capture a subpattern such as the dot-star in <span class="regex">abc<span class="red">(.*)</span>xyz</span>. For example, <a href="../lib/RegExMatch.htm">RegExMatch()</a> stores the substring that matches each subpattern in its <a href="../lib/RegExMatch.htm#Array">output array</a>. Similarly, <a href="../lib/RegExReplace.htm">RegExReplace()</a> allows the substring that matches each subpattern to be reinserted into the result via <a href="../lib/RegExReplace.htm#BackRef">backreferences</a> like $1. To use the parentheses without the side-effect of capturing a subpattern, specify <strong>?:</strong> as the first two characters inside the parentheses; for example: <span class="regex">(<span class="red">?:</span>.*)</span></li>
+          <li id="capture">Capture a subpattern such as the dot-star in <span class="regex">abc<span class="red">(.*)</span>xyz</span>. For example, <a href="../lib/RegExMatch.htm">RegExMatch</a> stores the substring that matches each subpattern in its <a href="../lib/RegExMatch.htm#MatchObject">output array</a>. Similarly, <a href="../lib/RegExReplace.htm">RegExReplace</a> allows the substring that matches each subpattern to be reinserted into the result via <a href="../lib/RegExReplace.htm#BackRef">backreferences</a> like $1. To use the parentheses without the side-effect of capturing a subpattern, specify <strong>?:</strong> as the first two characters inside the parentheses; for example: <span class="regex">(<span class="red">?:</span>.*)</span></li>
 	      <li>Change <a href="#Options">options</a> on-the-fly. For example, <span class="regex">(?im)</span> turns on the case-insensitive and multiline options for the remainder of the pattern (or subpattern if it occurs inside a subpattern). Conversely, <span class="regex">(?-im)</span> would turn them both off. All options are supported except DPS`r`n`a.</li>
 	    </ul></td>
   </tr>
 	<tr>
 	  <td class="center bold">\t<br>\r<br>etc.</td>
 	  <td><p>These escape sequences stand for special characters. The most common ones are <strong>\t</strong> (tab), <strong>\r</strong> (carriage return), and <strong>\n</strong> (linefeed). In AutoHotkey, an accent (`) may optionally be used in place of the backslash in these cases. Escape sequences in the form <strong>\xhh</strong> are also supported, in which <em>hh</em> is the hex code of any ANSI character between 00 and FF.</p>
-      <p><span class="ver">[v1.0.46.06+]</span>: <strong>\R</strong> means "any single newline of any type", namely those listed at the <a href="#NEWLINE_ANY">`a option</a> (however, \R inside a <a href="#class">character class</a> is merely the letter "R"). <span class="ver">[v1.0.47.05+]</span>: \R can be restricted to CR, LF, and CRLF by specifying (*BSR_ANYCRLF) in uppercase at the beginning of the pattern (after the options); e.g. <span class="regex">im)(*BSR_ANYCRLF)abc\Rxyz</span></p></td>
+      <p><strong>\R</strong> matches <code>`r`n</code>, <code>`n</code> and <code>`r</code> (however, \R inside a <a href="#class">character class</a> is merely the letter "R").</p></td>
   </tr>
   <tr id="slashP">
     <td class="center bold">\p{xx}<br>\P{xx}<br>\X</td>
-    <td><p><span class="ver">[AHK_L 61+]</span>: Unicode character properties. Not supported on ANSI builds. <strong>\p{xx}</strong> matches a character with the xx property while <strong>\P{xx}</strong> matches any character <i>without</i> the xx property. For example, <span class="regex">\pL</span> matches any letter and <span class="regex">\p{Lu}</span> matches any upper-case letter. <strong>\X</strong> matches any number of characters that form an extended Unicode sequence.</p>
+    <td><p>Unicode character properties. <strong>\p{xx}</strong> matches a character with the xx property while <strong>\P{xx}</strong> matches any character <i>without</i> the xx property. For example, <span class="regex">\pL</span> matches any letter and <span class="regex">\p{Lu}</span> matches any upper-case letter. <strong>\X</strong> matches any number of characters that form an extended Unicode sequence.</p>
     <p>For a full list of supported property names and other details, search for "\p{xx}" at <a href="http://www.pcre.org/pcre.txt">www.pcre.org/pcre.txt</a>.</p></td>
   </tr>
   <tr id="UCP">
     <td class="center bold">(*UCP)</td>
-    <td><p><span class="ver">[AHK_L 61+]</span>: For performance, \d, \D, \s, \S, \w, \W, \b and \B recognize only ASCII characters by default, even on Unicode builds. If the pattern begins with <strong>(*UCP)</strong>, Unicode properties will be used to determine which characters match. For example, \w becomes equivalent to <span class="regex">[\p{L}\p{N}_]</span> and \d becomes equivalent to <span class="regex">\p{Nd}</span>.</p>
+    <td><p>For performance, \d, \D, \s, \S, \w, \W, \b and \B recognize only ASCII characters by default. If the pattern begins with <strong>(*UCP)</strong>, Unicode properties will be used to determine which characters match. For example, \w becomes equivalent to <span class="regex">[\p{L}\p{N}_]</span> and \d becomes equivalent to <span class="regex">\p{Nd}</span>.</p>
     </td>
   </tr>
 </table>
 <p><strong>Greed:</strong> By default, <strong>*</strong>, <strong>?</strong>, <strong>+</strong>, and <strong>{min,max}</strong> are greedy because they consume all characters up through the <em>last</em> possible one that still satisfies the entire pattern. To instead have them stop at the <em>first</em> possible character, follow them with a question mark. For example, the pattern <span class="regex">&lt;.+&gt;</span> (which lacks a question mark) means: "search for a &lt;, followed by one or more of any character, followed by a &gt;". To stop this pattern from matching the <em>entire</em> string <span class="subj"><span class="red"><strong>&lt;</strong></span>em&gt;text&lt;/em<span class="red"><strong>&gt;</strong></span></span>, append a question mark to the plus sign: <span class="regex">&lt;.+<span class="red">?</span>&gt;</span>. This causes the match to stop at the first '&gt;' and thus it matches only the first tag <span class="subj"><span class="red"><strong>&lt;</strong></span>em<span class="red"><strong>&gt;</strong></span></span>.</p>
 <p><strong>Look-ahead and look-behind assertions:</strong> The groups <span class="regex">(?=...)</span>, <span class="regex">(?!...)</span>, <span class="regex">(?&lt;=...)</span>, and <span class="regex">(?&lt;!...)</span> are called <em>assertions</em> because they demand a condition to be met but don't consume any characters. For example, <span class="regex">abc(?=.*xyz)</span> is a look-ahead assertion that requires the string xyz to exist somewhere to the right of the string abc (if it doesn't, the entire pattern is not considered a match). <span class="regex">(?=...)</span> is called a <em>positive</em> look-ahead because it requires that the specified pattern exist. Conversely, <span class="regex">(?!...)</span> is a <em>negative</em> look-ahead because it requires that the specified pattern <em>not</em> exist. Similarly, <span class="regex">(?&lt;=...)</span> and <span class="regex">(?&lt;!...)</span> are positive and negative look-<em>behinds</em> (respectively) because they look to the <em>left</em> of the current position rather than the right. Look-behinds are more limited than look-aheads because they do not support quantifiers of varying size such as <strong>*</strong>, <strong>?</strong>, and <strong>+</strong>. The escape sequence <strong>\K</strong> is similar to a look-behind assertion because it causes any previously-matched characters to be omitted from the final matched string. For example, <span class="regex">foo\Kbar</span> matches "foobar" but reports that it has matched "bar".</p>
-<p><strong>Related:</strong> Regular expressions are supported by <a href="../lib/RegExMatch.htm">RegExMatch()</a>, <a href="../lib/RegExReplace.htm">RegExReplace()</a>, and <a href="../lib/SetTitleMatchMode.htm">SetTitleMatchMode</a>.</p>
+<p><strong>Related:</strong> Regular expressions are supported by <a href="../lib/RegExMatch.htm">RegExMatch</a>, <a href="../lib/RegExReplace.htm">RegExReplace</a>, and <a href="../lib/SetTitleMatchMode.htm">SetTitleMatchMode</a>.</p>
 <p class="note"><strong>Final note:</strong> Although this page touches upon most of the commonly-used RegEx features, there are quite a few other features you may want to explore such as conditional subpatterns. The complete PCRE manual is at <a href="http://www.pcre.org/pcre.txt">www.pcre.org/pcre.txt</a></p>
 
 </body>

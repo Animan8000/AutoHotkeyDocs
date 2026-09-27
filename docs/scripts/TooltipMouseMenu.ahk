@@ -1,4 +1,4 @@
-﻿; ToolTip Mouse Menu (requires XP/2k/NT) -- by Rajat
+﻿; ToolTip Mouse Menu (based on the v1 script by Rajat)
 ; https://www.autohotkey.com
 ; This script displays a popup menu in response to briefly holding down
 ; the middle mouse button.  Select a menu item by left-clicking it.
@@ -7,14 +7,11 @@
 ; window is active (Notepad and Word are used as examples here).
 
 ; You can set any title here for the menu:
-MenuTitle = -=-=-=-=-=-=-=-
+g_MenuTitle := "-=-=-=-=-=-=-=-"
 
 ; This is how long the mouse button must be held to cause the menu to appear:
-UMDelay = 20
+g_UMDelay := 20
 
-SetFormat, float, 0.0
-SetBatchLines, 10ms 
-SetTitleMatchMode, 2
 #SingleInstance
 
 
@@ -26,17 +23,19 @@ SetTitleMatchMode, 2
 
 ; Don't worry about the order, the menu will be sorted.
 
-MenuItems = Notepad/Calculator/Section 3/Section 4/Section 5
+g_MenuItems := "Notepad/Calculator/Section 3/Section 4/Section 5"
 
 
 ;___________________________________________
 ;______Dynamic menuitems here_______________
 
 ; Syntax:
-;     Dyn# = MenuItem|Window title
+;     "MenuItem|Window title"
 
-Dyn1 = MS Word|- Microsoft Word
-Dyn2 = Notepad II|- Notepad
+g_Dyn := [
+    "MS Word|- Microsoft Word",
+    "Notepad II|- Notepad",
+]
 
 ;___________________________________________
 
@@ -48,117 +47,100 @@ Exit
 
 ; Create / Edit Menu Sections here.
 
-Notepad:
-Run, Notepad.exe
-Return
+Notepad()
+{
+    Run "Notepad.exe"
+}
 
-Calculator:
-Run, Calc
-Return
+Calculator()
+{
+    Run "Calc"
+}
 
-Section3:
-MsgBox, You selected 3
-Return
+Section3()
+{
+    MsgBox "You selected 3"
+}
 
-Section4:
-MsgBox, You selected 4
-Return
+Section4()
+{
+    MsgBox "You selected 4"
+}
 
-Section5:
-MsgBox, You selected 5
-Return
+Section5()
+{
+    MsgBox "You selected 5"
+}
 
-MSWord:
-MsgBox, this is a dynamic entry (word)
-Return
+MSWord()
+{
+    MsgBox "this is a dynamic entry (word)"
+}
 
-NotepadII:
-MsgBox, this is a dynamic entry (notepad)
-Return
+NotepadII()
+{
+    MsgBox "this is a dynamic entry (notepad)"
+}
 
 
 ;___________________________________________
 ;_____Hotkey Section________________________
 
 ~MButton::
-HowLong = 0
-Loop
 {
-	HowLong ++
-	Sleep, 10
-	GetKeyState, MButton, MButton, P
-	IfEqual, MButton, U, Break
+    HowLong := 0
+    Loop
+    {
+        HowLong++
+        Sleep 10
+        if !GetKeyState("MButton", "P")
+            Break
+    }
+    if HowLong < g_UMDelay
+        return
+
+
+    ; Prepares dynamic menu:
+    DynMenu := ""
+    For i, item in g_Dyn
+    {
+        mp := StrSplit(item, "|")
+        if WinActive(mp[2])
+            DynMenu .= "/" mp[1]
+    }
+
+
+    ; Joins sorted main menu and dynamic menu, and
+    ; clears earlier entries and creates new entries:
+    MenuItem := StrSplit(Sort(g_MenuItems, "D/") DynMenu, "/")
+
+    ; Creates the menu:
+    ToolTipMenu := g_MenuTitle
+    For i, item in MenuItem
+        ToolTipMenu .= "`n" item
+
+    MouseGetPos &mX, &mY
+    Hotkey "~LButton", MenuClick
+    Hotkey "~LButton", "On"
+    ToolTip ToolTipMenu, mX, mY
+    WinActivate g_MenuTitle
+    WinGetPos ,,, &tH, g_MenuTitle
+    
+    MenuClick(*)
+    {
+        Hotkey "~LButton", "Off"
+        if !WinActive(g_MenuTitle)
+        {
+            ToolTip
+            return
+        }
+
+        MouseGetPos &mX, &mY
+        ToolTip
+        mY /= tH / (MenuItem.Length + 1)  ; Space taken by each line.
+        if mY < 1
+            return
+        TargetSection := MenuItem[Integer(mY)]
+        %StrReplace(TargetSection, "`s")%()
+    }
 }
-IfLess, HowLong, %UMDelay%, Return
-
-
-;prepares dynamic menu
-DynMenu =
-Loop
-{
-	IfEqual, Dyn%A_Index%,, Break
-
-	StringGetPos, ppos, dyn%A_Index%, |
-	StringLeft, item, dyn%A_Index%, %ppos%
-	ppos += 2
-	StringMid, win, dyn%A_Index%, %ppos%, 1000
-
-	IfWinActive, %win%,
-		DynMenu = %DynMenu%/%item%
-}
-
-
-;Joins sorted main menu and dynamic menu
-Sort, MenuItems, D/
-TempMenu = %MenuItems%%DynMenu%
-
-
-;clears earlier entries
-Loop
-{
-	IfEqual, MenuItem%A_Index%,, Break
-	MenuItem%A_Index% =
-}
-
-;creates new entries
-Loop, Parse, TempMenu, /
-{
-	MenuItem%A_Index% = %A_LoopField%
-}
-
-;creates the menu
-Menu = %MenuTitle%
-Loop
-{
-	IfEqual, MenuItem%A_Index%,, Break
-	numItems ++
-	StringTrimLeft, MenuText, MenuItem%A_Index%, 0
-	Menu = %Menu%`n%MenuText%
-}
-
-MouseGetPos, mX, mY
-Hotkey, ~LButton, MenuClick
-Hotkey, ~LButton, On
-ToolTip, %Menu%, %mX%, %mY%
-WinActivate, %MenuTitle%
-Return
-
-
-MenuClick:
-Hotkey, ~LButton, Off
-IfWinNotActive, %MenuTitle%
-{
-	ToolTip
-	Return
-}
-
-MouseGetPos, mX, mY
-ToolTip
-mY -= 3		;space after which first line starts
-mY /= 13	;space taken by each line
-IfLess, mY, 1, Return
-IfGreater, mY, %numItems%, Return
-StringTrimLeft, TargetSection, MenuItem%mY%, 0
-StringReplace, TargetSection, TargetSection, %A_Space%,, A
-Gosub, %TargetSection%
-Return

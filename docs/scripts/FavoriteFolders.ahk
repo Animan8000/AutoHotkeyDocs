@@ -1,4 +1,4 @@
-﻿; Easy Access to Favorite Folders -- by Savage
+﻿; Easy Access to Favorite Folders (based on the v1 script by Savage)
 ; https://www.autohotkey.com
 ; When you click the middle mouse button while certain types of
 ; windows are active, this script displays a menu of your favorite
@@ -9,12 +9,6 @@
 ; The menu can also be optionally shown for unsupported window
 ; types, in which case the chosen favorite will be opened as a new
 ; Explorer window.
-
-; Note: In Windows Explorer, if "View > Toolbars > Address Bar" is
-; not enabled, the menu will not be shown if the hotkey chosen below
-; has a tilde.  If it does have a tilde, the menu will be shown
-; but the favorite will be opened in a new Explorer window rather
-; than switching the active Explorer window to that folder.
 
 ; CONFIG: CHOOSE YOUR HOTKEY
 ; If your mouse has more than 3 buttons, you could try using
@@ -29,7 +23,7 @@
 ; favorite while an unsupported window type is active, a new
 ; Explorer window will be opened to display the contents of that
 ; folder.
-f_Hotkey = ~MButton
+g_Hotkey := "~MButton"
 
 ; CONFIG: CHOOSE YOUR FAVORITES
 ; Update the special commented section below to list your favorite
@@ -39,11 +33,11 @@ f_Hotkey = ~MButton
 
 /*
 ITEMS IN FAVORITES MENU <-- Do not change this string.
-Desktop      ; %A_Desktop%
-Favorites    ; %A_Desktop%\..\Favorites
-My Documents ; %A_MyDocuments%
+Desktop      ; %USERPROFILE%\Desktop
+Favorites    ; %USERPROFILE%\Favorites
+Documents    ; %USERPROFILE%\Documents
 
-Program Files; %A_ProgramFiles%
+Program Files; %PROGRAMFILES%
 */
 
 
@@ -53,134 +47,167 @@ Program Files; %A_ProgramFiles%
 
 #SingleInstance  ; Needed since the hotkey is dynamically created.
 
-Hotkey, %f_Hotkey%, f_DisplayMenu
-StringLeft, f_HotkeyFirstChar, f_Hotkey, 1
-if f_HotkeyFirstChar = ~  ; Show menu only for certain window types.
-	f_AlwaysShowMenu = n
-else
-	f_AlwaysShowMenu = y
+g_AlwaysShowMenu := true
+g_Paths := []
+g_Menu := Menu()
+g_window_id := 0
+g_class := ""
 
-; Used to reliably determine whether script is compiled:
-SplitPath, A_ScriptName,,, f_FileExt
-if f_FileExt = Exe  ; Read the menu items from an external file.
-	f_FavoritesFile = %A_ScriptDir%\Favorites.ini
+Hotkey g_Hotkey, DisplayMenu
+if SubStr(g_Hotkey, 1, 1) = "~"  ; Show menu only for certain window types.
+    g_AlwaysShowMenu := false
+
+if A_IsCompiled  ; Read the menu items from an external file.
+    FavoritesFile := A_ScriptDir "\Favorites.ini"
 else  ; Read the menu items directly from this script file.
-	f_FavoritesFile = %A_ScriptFullPath%
+    FavoritesFile := A_ScriptFullPath
 
 ;----Read the configuration file.
-f_AtStartingPos = n
-f_MenuItemCount = 0
-Loop, Read, %f_FavoritesFile%
+AtStartingPos := false
+FileExt := ""
+Loop Read, FavoritesFile
 {
-	if f_FileExt <> Exe
-	{
-		; Since the menu items are being read directly from this
-		; script, skip over all lines until the starting line is
-		; arrived at.
-		if f_AtStartingPos = n
-		{
-			IfInString, A_LoopReadLine, ITEMS IN FAVORITES MENU
-				f_AtStartingPos = y
-			continue  ; Start a new loop iteration.
-		}
-		; Otherwise, the closing comment symbol marks the end of the list.
-		if A_LoopReadLine = */
-			break  ; terminate the loop
-	}
-	; Menu separator lines must also be counted to be compatible
-	; with A_ThisMenuItemPos:
-	f_MenuItemCount++
-	if A_LoopReadLine =  ; Blank indicates a separator line.
-		Menu, Favorites, Add
-	else
-	{
-		StringSplit, f_line, A_LoopReadLine, `;
-		f_line1 = %f_line1%  ; Trim leading and trailing spaces.
-		f_line2 = %f_line2%  ; Trim leading and trailing spaces.
-		; Resolve any references to variables within either field, and
-		; create a new array element containing the path of this favorite:
-		Transform, f_path%f_MenuItemCount%, deref, %f_line2%
-		Transform, f_line1, deref, %f_line1%
-		Menu, Favorites, Add, %f_line1%, f_OpenFavorite
-	}
+    if FileExt != "Exe"
+    {
+        ; Since the menu items are being read directly from this
+        ; script, skip over all lines until the starting line is
+        ; arrived at.
+        if !AtStartingPos
+        {
+            if InStr(A_LoopReadLine, "ITEMS IN FAVORITES MENU")
+                AtStartingPos := true
+            continue  ; Start a new loop iteration.
+        }
+        ; Otherwise, the closing comment symbol marks the end of the list.
+        if A_LoopReadLine = "*/"
+            break  ; terminate the loop
+    }
+    if !A_LoopReadLine  ; Blank indicates a separator line.
+    {
+        ; Menu separator lines must also be pushed to the array
+        ; to be compatible with ItemPos:
+        g_Paths.Push("")
+        g_Menu.Add()
+    }
+    else
+    {
+        line := StrSplit(A_LoopReadLine, ";", "`s`t")
+        ; Resolve any references to variables within either field, and
+        ; create a new array element containing the path of this favorite:
+        g_Paths.Push(line[2])
+        g_Menu.Add(line[1], OpenFavorite)
+    }
 }
-return  ;----End of auto-execute section.
 
 
 ;----Open the selected favorite
-f_OpenFavorite:
-; Fetch the array element that corresponds to the selected menu item:
-StringTrimLeft, f_path, f_path%A_ThisMenuItemPos%, 0
-if f_path =
-	return
-if f_class = #32770    ; It's a dialog.
+OpenFavorite(ItemName, ItemPos, *)
 {
-	if f_Edit1Pos <>   ; And it has an Edit1 control.
-	{
-		; Activate the window so that if the user is middle-clicking
-		; outside the dialog, subsequent clicks will also work:
-		WinActivate ahk_id %f_window_id%
-		; Retrieve any filename that might already be in the field so
-		; that it can be restored after the switch to the new folder:
-		ControlGetText, f_text, Edit1, ahk_id %f_window_id%
-		ControlSetText, Edit1, %f_path%, ahk_id %f_window_id%
-		ControlSend, Edit1, {Enter}, ahk_id %f_window_id%
-		Sleep, 100  ; It needs extra time on some dialogs or in some cases.
-		ControlSetText, Edit1, %f_text%, ahk_id %f_window_id%
-		return
-	}
-	; else fall through to the bottom of the subroutine to take standard action.
+    control_id := 0
+    ; Fetch the array element that corresponds to the selected menu item:
+    path := g_Paths[ItemPos]
+    if path = ""
+        return
+    if g_class = "#32770"    ; It's a dialog.
+    {
+        ; Activate the window so that if the user is middle-clicking
+        ; outside the dialog, subsequent clicks will also work:
+        WinActivate g_window_id
+        ; Retrieve the unique ID number of the Edit1 control:
+        control_id := ControlGetHwnd("Edit1", g_window_id)
+        ; Retrieve any filename that might already be in the field so
+        ; that it can be restored after the switch to the new folder:
+        text := ControlGetText(control_id)
+        ControlSetText path, control_id
+        ControlFocus control_id
+        ControlSend "{Enter}", control_id
+        Sleep 100  ; It needs extra time on some dialogs or in some cases.
+        ControlSetText text, control_id
+        return
+    }
+    else if g_class = "CabinetWClass"  ; In Explorer, switch folders.
+    {
+        if VerCompare(A_OSVersion, "10.0.22000") >= 0 ; Windows 11 and later
+        {
+            try GetActiveExplorerTab().Navigate(ExpandEnvVars(path))
+        }
+        else
+        {
+            ControlClick "ToolbarWindow323", g_window_id,,,, "NA x1 y1"
+            ; Wait until the Edit1 control exists:
+            while not control_id
+                try control_id := ControlGetHwnd("Edit1", g_window_id)
+            ControlFocus control_id
+            ControlSetText path, control_id
+            ; Tekl reported the following: "If I want to change to Folder L:\folder
+            ; then the addressbar shows http://www.L:\folder.com. To solve this,
+            ; I added a {right} before {Enter}":
+            ControlSend "{Right}{Enter}", control_id
+        }
+        return
+    }
+    else if g_class ~= "ConsoleWindowClass|CASCADIA_HOSTING_WINDOW_CLASS" ; In a console window, CD to that directory
+    {
+        WinActivate g_window_id ; Because sometimes the mclick deactivates it.
+        SetKeyDelay 0  ; This will be in effect only for the duration of this thread.
+        if InStr(path, ":")  ; It contains a drive letter
+        {
+            path_drive := SubStr(path, 1, 1)
+            Send path_drive ":{enter}"
+        }
+        Send "cd " path "{Enter}"
+        return
+    }
+    ; Since the above didn't return, one of the following is true:
+    ; 1) It's an unsupported window type but g_AlwaysShowMenu is true.
+    Run "explorer " path  ; Might work on more systems without double quotes.
 }
-else if f_class in ExploreWClass,CabinetWClass  ; In Explorer, switch folders.
-{
-	if f_Edit1Pos <>   ; And it has an Edit1 control.
-	{
-		ControlSetText, Edit1, %f_path%, ahk_id %f_window_id%
-		; Tekl reported the following: "If I want to change to Folder L:\folder
-		; then the addressbar shows http://www.L:\folder.com. To solve this,
-		; I added a {right} before {Enter}":
-		ControlSend, Edit1, {Right}{Enter}, ahk_id %f_window_id%
-		return
-	}
-	; else fall through to the bottom of the subroutine to take standard action.
-}
-else if f_class = ConsoleWindowClass ; In a console window, CD to that directory
-{
-	WinActivate, ahk_id %f_window_id% ; Because sometimes the mclick deactivates it.
-	SetKeyDelay, 0  ; This will be in effect only for the duration of this thread.
-	IfInString, f_path, :  ; It contains a drive letter
-	{
-		StringLeft, f_path_drive, f_path, 1
-		Send %f_path_drive%:{enter}
-	}
-	Send, cd %f_path%{Enter}
-	return
-}
-; Since the above didn't return, one of the following is true:
-; 1) It's an unsupported window type but f_AlwaysShowMenu is y (yes).
-; 2) It's a supported type but it lacks an Edit1 control to facilitate the custom
-;    action, so instead do the default action below.
-Run, Explorer %f_path%  ; Might work on more systems without double quotes.
-return
 
 
 ;----Display the menu
-f_DisplayMenu:
-; These first few variables are set here and used by f_OpenFavorite:
-WinGet, f_window_id, ID, A
-WinGetClass, f_class, ahk_id %f_window_id%
-if f_class in #32770,ExploreWClass,CabinetWClass  ; Dialog or Explorer.
-	ControlGetPos, f_Edit1Pos,,,, Edit1, ahk_id %f_window_id%
-if f_AlwaysShowMenu = n  ; The menu should be shown only selectively.
+DisplayMenu(*)
 {
-	if f_class in #32770,ExploreWClass,CabinetWClass  ; Dialog or Explorer.
-	{
-		if f_Edit1Pos =  ; The control doesn't exist, so don't display the menu
-			return
-	}
-	else if f_class <> ConsoleWindowClass
-		return ; Since it's some other window type, don't display menu.
+    ; These first few variables are set here and used by OpenFavorite:
+    try global g_window_id := WinGetID("A")
+    try global g_class := WinGetClass(g_window_id)
+    if g_AlwaysShowMenu = false  ; The menu should be shown only selectively.
+    {
+        if !(g_class ~= "#32770|ExploreWClass|CabinetWClass|ConsoleWindowClass|CASCADIA_HOSTING_WINDOW_CLASS")
+            return ; Since it's some other window type, don't display menu.
+    }
+    ; Otherwise, the menu should be presented for this type of window:
+    g_Menu.Show()
 }
-; Otherwise, the menu should be presented for this type of window:
-Menu, Favorites, show
-return
+
+; Get the WebBrowser object of the active Explorer tab for the given window,
+; or the window itself if it doesn't have tabs.  Supports IE and File Explorer.
+; https://www.autohotkey.com/boards/viewtopic.php?t=109907
+GetActiveExplorerTab(hwnd := WinExist("A")) {
+    activeTab := 0
+    try activeTab := ControlGetHwnd("ShellTabWindowClass1", hwnd) ; File Explorer (Windows 11)
+    catch
+    try activeTab := ControlGetHwnd("TabWindowClass1", hwnd) ; IE
+    for w in ComObject("Shell.Application").Windows {
+        if w.hwnd != hwnd
+            continue
+        if activeTab { ; The window has tabs, so make sure this is the right one.
+            static IID_IShellBrowser := "{000214E2-0000-0000-C000-000000000046}"
+            shellBrowser := ComObjQuery(w, IID_IShellBrowser, IID_IShellBrowser)
+            ComCall(3, shellBrowser, "uint*", &thisTab:=0)
+            if thisTab != activeTab
+                continue
+        }
+        return w
+    }
+}
+
+ExpandEnvVars(str)
+{
+    if sz:=DllCall("ExpandEnvironmentStrings", "Str", str, "Ptr", 0, "UInt", 0)
+    {
+        buf := Buffer(sz * 2)
+        if DllCall("ExpandEnvironmentStrings", "Str", str, "Ptr", buf, "UInt", sz)
+            return StrGet(buf)
+    }
+    return str
+}

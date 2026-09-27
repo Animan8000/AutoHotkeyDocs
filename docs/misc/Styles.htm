@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-  <title>Window and Control Styles | AutoHotkey</title>
-<meta name="description" content="This page lists some styles and extended styles which can be set or retrieved with Gui, GuiControl, WinSet, WinGet, Control and ControlGet commands." />
+  <title>Window and Control Styles | AutoHotkey v2</title>
+<meta name="description" content="This page lists some styles and extended styles which can be set or retrieved with Gui or GuiControl object's Opt method, WinSetStyle, WinGetStyle, ControlSetStyle and ControlGetStyle." />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="../static/theme.css" rel="stylesheet" type="text/css" />
@@ -11,13 +11,13 @@
 
 <body>
 <h1>Window and Control Styles</h1>
-<p>This page lists some styles and extended styles which can be set or retrieved with <a href="../lib/Gui.htm">Gui</a>, <a href="../lib/GuiControl.htm">GuiControl</a>, <a href="../lib/WinSet.htm">WinSet</a>, <a href="../lib/WinGet.htm">WinGet</a>, <a href="../lib/Control.htm">Control</a> and <a href="../lib/ControlGet.htm">ControlGet</a> commands.</p>
+<p>This page lists some styles and extended styles which can be set or retrieved with the methods <a href="../lib/Gui.htm#Opt">Gui.Opt</a> and <a href="../lib/GuiControl.htm#Opt">GuiControl.Opt</a>, and with the built-in functions <a href="../lib/WinSetStyle.htm">WinSetStyle</a>, <a href="../lib/WinSetStyle.htm">WinSetExStyle</a>, <a href="../lib/WinGetStyle.htm">WinGetStyle</a>, <a href="../lib/WinGetStyle.htm">WinGetExStyle</a>, <a href="../lib/ControlSetStyle.htm">ControlSetStyle</a>, <a href="../lib/ControlSetStyle.htm">ControlSetExStyle</a>, <a href="../lib/ControlGetStyle.htm">ControlGetStyle</a> and <a href="../lib/ControlGetStyle.htm">ControlGetExStyle</a>.</p>
 
 <h2 id="toc">Table of Contents</h2>
 <ul>
   <li><a href="#Common">Styles Common to Gui/Parent Windows and Most Control Types</a></li>
   <li><a href="#Text">Text</a> | <a href="#Edit">Edit</a> | <a href="#UpDown">UpDown</a> | <a href="#Pic">Picture</a></li>
-  <li><a href="#Button">Button | Checkbox | Radio | GroupBox</a></li>
+  <li><a href="#Button">Button | CheckBox | Radio | GroupBox</a></li>
   <li><a href="#DDL">DropDownList | ComboBox</a></li>
   <li><a href="#ListBox">ListBox</a> | <a href="#ListView">ListView</a> | <a href="#TreeView">TreeView</a></li>
   <li><a href="#DateTime">DateTime</a> | <a href="#MonthCal">MonthCal</a></li>
@@ -166,6 +166,13 @@
   <td>SS_CENTER</td>
   <td>0x1</td>
   <td>+/-Center. Specifies a simple rectangle and centers the text in the rectangle. The control automatically wraps words that extend past the end of a line to the beginning of the next centered line.</td>
+</tr>
+<tr>
+  <td>SS_CENTERIMAGE</td>
+  <td>0x200</td>
+  <td>
+    <p>If the control contains a single line of text, the text is centered vertically within the available height of the control.</p>
+  </td>
 </tr>
 <tr id="SS_ETCHEDFRAME">
   <td>SS_ETCHEDFRAME</td>
@@ -362,7 +369,7 @@
 <tr id="UDS_HOTTRACK">
   <td>UDS_HOTTRACK</td>
   <td>0x100</td>
-  <td>Causes the control to exhibit "hot tracking" behavior. That is, it highlights the control's buttons as the mouse passes over them. The flag is ignored on Windows XP when the desktop theme overrides it.</td>
+  <td>Causes the control to exhibit "hot tracking" behavior. That is, it highlights the control's buttons as the mouse passes over them. This flag may be ignored if the desktop theme overrides it.</td>
 </tr>
 </table>
 
@@ -377,21 +384,20 @@
 <tr id="SS_REALSIZECONTROL">
   <td>SS_REALSIZECONTROL</td>
   <td>0x40</td>
-  <td>[Windows XP or later] Adjusts the bitmap to fit the size of the control.</td>
+  <td>Adjusts the bitmap to fit the size of the control.</td>
 </tr>
 <tr id="SS_CENTERIMAGE">
   <td>SS_CENTERIMAGE</td>
   <td>0x200</td>
   <td>
-    <p>Centers the bitmap in the control. If the bitmap is too large, it will be clipped. For text controls, if the control contains a single line of text, the text is centered vertically within the available height of the control.</p>
-    <p>Microsoft Windows XP: This style bit no longer results in unused portions of the control being filled with the color of the top left pixel of the bitmap or icon. Unused portions of the control will remain the background color.</p>
+    <p>Centers the bitmap in the control. If the bitmap is too large, it will be clipped.</p>
   </td>
 </tr>
 </table>
 
 <h2 id="Button">Button, CheckBox, Radio, and GroupBox Control Styles</h2>
-<p>These styles affect the <a href="../lib/GuiControls.htm#Button">Button</a>, <a href="../lib/GuiControls.htm#Checkbox">CheckBox</a>, <a href="../lib/GuiControls.htm#Radio">Radio</a>, or <a href="../lib/GuiControls.htm#GroupBox">GroupBox</a> controls.</p>
-<p>By default, each of these controls except GroupBox uses the styles <a href="#BS_MULTILINE">BS_MULTILINE</a> (unless it has no explicitly set width or height, nor any CR/LF characters in their text) and <a href="#WS_TABSTOP">WS_TABSTOP</a> (however, Radio controls other than the first of each radio group lack WS_TABSTOP). In addition, Radio controls have <a href="#BS_NOTIFY">BS_NOTIFY</a> so that double clicks can be detected.</p>
+<p>These styles affect the <a href="../lib/GuiControls.htm#Button">Button</a>, <a href="../lib/GuiControls.htm#CheckBox">CheckBox</a>, <a href="../lib/GuiControls.htm#Radio">Radio</a>, or <a href="../lib/GuiControls.htm#GroupBox">GroupBox</a> controls.</p>
+<p>By default, each of these controls except GroupBox uses the styles <a href="#BS_MULTILINE">BS_MULTILINE</a> (unless it has no explicitly set width or height, nor any CR/LF characters in their text) and <a href="#WS_TABSTOP">WS_TABSTOP</a> (however, Radio controls other than the first of each radio group lack WS_TABSTOP).</p>
 <p>The following styles are always enabled and cannot be disabled:</p>
 <ul>
   <li>Button: <a href="#BS_PUSHBUTTON">BS_PUSHBUTTON</a> or <a href="#BS_DEFPUSHBUTTON">BS_DEFPUSHBUTTON</a></li>
@@ -712,7 +718,7 @@
   <td>+/-SortDesc. Same as above but in descending order.</td>
 </tr>
 </table>
-<p id="LVS_EX" class="note"><strong>Extended ListView styles</strong> require the <a href="../lib/ListView.htm#LVS_EX">LV prefix</a> when used with the Gui commands. Some extended styles introduced in Windows XP or later versions are not listed here. For a full list, see <a href="https://learn.microsoft.com/windows/win32/controls/extended-list-view-styles">Microsoft Docs: Extended List-View Styles</a>.</p>
+<p id="LVS_EX" class="note"><strong>Extended ListView styles</strong> require the <a href="../lib/ListView.htm#LVS_EX">LV prefix</a> when used with the Gui methods/properties. Some extended styles introduced in Windows XP or later versions are not listed here. For a full list, see <a href="https://learn.microsoft.com/windows/win32/controls/extended-list-view-styles">Microsoft Docs: Extended List-View Styles</a>.</p>
 <table class="info">
 <tr>
   <th abbr="ExStyle">Extended Style</th>
@@ -729,14 +735,14 @@
   <td>LV0x4</td>
   <td>
     <p>+/-Checked. Displays a checkbox with each item. When set to this style, the control creates and sets a state image list with two images using DrawFrameControl. State image 1 is the unchecked box, and state image 2 is the checked box. Setting the state image to zero removes the check box altogether.</p>
-    <p>Windows XP or later: Checkboxes are visible and functional with all list-view modes except the tile view mode introduced in Windows XP. Clicking a checkbox in tile view mode only selects the item; the state does not change.</p>
+    <p>Checkboxes are visible and functional with all list-view modes except the tile view mode. Clicking a checkbox in tile view mode only selects the item; the state does not change.</p>
   </td>
 </tr>
 <tr id="LVS_EX_DOUBLEBUFFER">
   <td>LVS_EX_DOUBLEBUFFER</td>
   <td>LV0x10000</td>
   <td>
-    <p>Windows XP or later: Paints via double-buffering, which reduces flicker. This extended style also enables alpha-blended marquee selection on systems where it is supported.</p>
+    <p>Paints via double-buffering, which reduces flicker. This extended style also enables alpha-blended marquee selection on systems where it is supported.</p>
   </td>
 </tr>
 <tr id="LVS_EX_FLATSB">
@@ -767,7 +773,7 @@
 <tr id="LVS_EX_LABELTIP">
   <td>LVS_EX_LABELTIP</td>
   <td>LV0x4000</td>
-  <td>If a partially hidden label in any list-view mode lacks ToolTip text, the list-view control will unfold the label. If this style is not set, the list-view control will unfold partly hidden labels only for the large icon mode. Requires Windows XP or later, or the DLLs distributed with Internet Explorer 5.0 or later. Note: On some versions of Windows, this style might not work properly if the GUI window is set to be always-on-top.</td>
+  <td>If a partially hidden label in any list-view mode lacks ToolTip text, the list-view control will unfold the label. If this style is not set, the list-view control will unfold partly hidden labels only for the large icon mode. Note: On some versions of Windows, this style might not work properly if the GUI window is set to be always-on-top.</td>
 </tr>
 <tr id="LVS_EX_MULTIWORKAREAS">
   <td>LVS_EX_MULTIWORKAREAS</td>
@@ -787,7 +793,7 @@
 <tr id="LVS_EX_SIMPLESELECT">
   <td>LVS_EX_SIMPLESELECT</td>
   <td>LV0x100000</td>
-  <td>In icon view, moves the state image of the item to the top right of the large icon rendering. In views other than icon view there is no change. When the user changes the state by using the space bar, all selected items cycle over, not the item with the focus. Requires Windows XP or later.</td>
+  <td>In icon view, moves the state image of the item to the top right of the large icon rendering. In views other than icon view there is no change. When the user changes the state by using the space bar, all selected items cycle over, not the item with the focus.</td>
 </tr>
 <tr id="LVS_EX_SUBITEMIMAGES">
   <td>LVS_EX_SUBITEMIMAGES</td>
@@ -922,7 +928,7 @@
 <tr id="DTS_SHOWNONE">
   <td>DTS_SHOWNONE</td>
   <td>0x2</td>
-  <td>Displays a checkbox inside the control that users can uncheck to make the control have no date/time selected. Whenever the control has no date/time, <a href="../lib/Gui.htm#Submit">Gui Submit</a> and <a href="../lib/GuiControlGet.htm">GuiControlGet</a> will retrieve a blank value (empty string).</td>
+  <td>Displays a checkbox inside the control that users can uncheck to make the control have no date/time selected. Whenever the control has no date/time, <a href="../lib/Gui.htm#Submit">Gui.Submit</a> and <a href="../lib/GuiControl.htm#Value">GuiControl.Value</a> will retrieve a blank value (empty string).</td>
 </tr>
 <tr id="DTS_SHORTDATEFORMAT">
   <td>DTS_SHORTDATEFORMAT</td>
@@ -957,7 +963,7 @@
 </table>
 
 <h2 id="MonthCal">MonthCal Control Styles</h2>
-<p>These styles affect the <a href="../lib/GuiControls.htm#MonthCal">MonthCal</a> control. By default, it uses <a href="#WS_TABSTOP">WS_TABSTOP</a> (only in <span class="ver">[v1.1.22+]</span>, and only on Windows Vista and later). It has no forced styles.</p>
+<p>These styles affect the <a href="../lib/GuiControls.htm#MonthCal">MonthCal</a> control. By default, it uses <a href="#WS_TABSTOP">WS_TABSTOP</a>. It has no forced styles.</p>
 <table class="info">
 <tr>
   <th>Style</th>
@@ -974,8 +980,7 @@
   <td>0x2</td>
   <td>
     <p>Named option "Multi". Allows the user to select a range of dates rather than being limited to a single date. By default, the maximum range is 366 days, which can be changed by sending the MCM_SETMAXSELCOUNT message to the control. For example:</p>
-    <pre>Gui +LastFound
-<a href="../lib/PostMessage.htm">SendMessage</a>, 0x1004, 7, 0, SysMonthCal321 <em>; 7 days. 0x1004 is MCM_SETMAXSELCOUNT.</em></pre>
+    <pre><a href="../lib/SendMessage.htm">SendMessage</a> 0x1004, 7, 0, "SysMonthCal321", MyGui <em>; 7 days. 0x1004 is MCM_SETMAXSELCOUNT.</em></pre>
   </td>
 </tr>
 <tr id="MCS_WEEKNUMBERS">
@@ -1032,10 +1037,10 @@
   <td>TBS_ENABLESELRANGE</td>
   <td>0x20</td>
   <td>
-    <p>The control displays a selection range only. The tick marks at the starting and ending positions of a selection range are displayed as triangles (instead of vertical dashes), and the selection range is highlighted (highlighting might require that the theme be removed via <code>Gui -theme</code>).</p>
+    <p>The control displays a selection range only. The tick marks at the starting and ending positions of a selection range are displayed as triangles (instead of vertical dashes), and the selection range is highlighted (highlighting might require that the theme be removed via <code>GuiObj.Opt("-Theme")</code>).</p>
     <p>To set the selection range, follow this example, which sets the starting position to 55 and the ending position to 66:</p>
-    <pre><a href="../lib/PostMessage.htm">SendMessage</a>, 0x040B, 1, 55, msctls_trackbar321, WinTitle
-<a href="../lib/PostMessage.htm">SendMessage</a>, 0x040C, 1, 66, msctls_trackbar321, WinTitle</pre>
+    <pre><a href="../lib/SendMessage.htm">SendMessage</a> 0x040B, 1, 55, "msctls_trackbar321", WinTitle
+<a href="../lib/SendMessage.htm">SendMessage</a> 0x040C, 1, 66, "msctls_trackbar321", WinTitle</pre>
   </td>
 </tr>
 <tr id="TBS_FIXEDLENGTH">
@@ -1071,7 +1076,7 @@
 </table>
 
 <h2 id="Progress">Progress Control Styles</h2>
-<p>These styles affect the <a href="../lib/GuiControls.htm#Progress">Progress</a> control. By default, it uses <a href="#PBS_SMOOTH">PBS_SMOOTH</a>. It has no forced styles.</p>
+<p>These styles affect the <a href="../lib/GuiControls.htm#Progress">Progress</a> control. It has neither default styles nor forced styles.</p>
 <table class="info">
 <tr>
   <th>Style</th>
@@ -1081,7 +1086,7 @@
 <tr id="PBS_SMOOTH">
   <td>PBS_SMOOTH</td>
   <td>0x1</td>
-  <td>+/-Smooth. The progress bar displays progress status in a smooth scrolling bar instead of the default segmented bar. When this style is present, the control automatically reverts to the Classic Theme appearance on Windows XP or later.</td>
+  <td>+/-Smooth. The progress bar displays progress status in a smooth scrolling bar instead of the default segmented bar. When this style is present, the control automatically reverts to the Classic Theme appearance.</td>
 </tr>
 <tr id="PBS_VERTICAL">
   <td>PBS_VERTICAL</td>
@@ -1092,7 +1097,7 @@
   <td>PBS_MARQUEE</td>
   <td>0x8</td>
   <td>
-    <p>[Requires Windows XP or later] The progress bar moves like a marquee; that is, each change to its position causes the bar to slide further along its available length until it wraps around to the other side. A bar with this style has no defined position. Each attempt to change its position will instead slide the bar by one increment.</p>
+    <p>The progress bar moves like a marquee; that is, each change to its position causes the bar to slide further along its available length until it wraps around to the other side. A bar with this style has no defined position. Each attempt to change its position will instead slide the bar by one increment.</p>
     <p>This style is typically used to indicate an ongoing operation whose completion time is unknown.</p>
   </td>
 </tr>
@@ -1226,8 +1231,7 @@
   <td>
     <p>Displays a tooltip when the mouse hovers over a part of the status bar that: 1) has too much text to be fully displayed; or 2) has an icon but no text.</p>
     <p>The text of the tooltip can be set via:</p>
-    <pre>Gui +LastFound
-<a href="../lib/PostMessage.htm">SendMessage</a>, A_IsUnicode ? 0x0411 : 0x0410, <strong>0</strong>, "Text to display", msctls_statusbar321 <em>; 0x0410 is SB_SETTIPTEXTA and 0x0411 is SB_SETTIPTEXTW.</em></pre>
+    <pre><a href="../lib/SendMessage.htm">SendMessage</a> 0x0411, <strong>0</strong>, StrPtr("Text to display"), "msctls_statusbar321", MyGui <em>; 0x0411 is SB_SETTIPTEXTW.</em></pre>
     <p>The bold <strong>0</strong> above is the zero-based part number. To use a part other than the first, specify 1 for second, 2 for the third, etc. NOTE: The tooltip might never appear on certain OS versions.</p>
   </td>
 </tr>

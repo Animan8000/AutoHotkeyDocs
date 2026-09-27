@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>Format() - Syntax &amp; Usage | AutoHotkey</title>
+<title>Format - Syntax &amp; Usage | AutoHotkey v2</title>
 <meta name="description" content="The Format function formats a variable number of input values according to a format string." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<h1>Format() <span class="ver">[v1.1.17+]</span></h1>
+<h1>Format</h1>
 
 <p>Formats a variable number of input values according to a format string.</p>
 
@@ -20,6 +20,7 @@
 
   <dt>FormatStr</dt>
   <dd>
+    <p>Type: <a href="../Concepts.htm#strings">String</a></p>
     <p>A format string composed of literal text and placeholders of the form <code>{<i>Index</i>:<i><a href="#FormatSpec">Format</a></i>}</code>.</p>
     <p><em>Index</em> is an integer indicating which input value to use, where 1 is the first value.</p>
     <p><em>Format</em> is an optional format specifier, as described below.</p>
@@ -30,13 +31,18 @@
 
   <dt>Values</dt>
   <dd>
+    <p>Type: <a href="../Concepts.htm#strings">String</a>, <a href="../Concepts.htm#numbers">Integer</a> or <a href="../Concepts.htm#numbers">Float</a></p>
     <p>Input values to be formatted and inserted into the final string. Each value is a separate parameter. The first value has an index of 1.</p>
     <p>To pass an array of values, use a <a href="../Functions.htm#VariadicCall">variadic function call</a>:</p>
     <pre>arr := [13, 240]
-MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
+MsgBox Format("{2:x}{1:02x}", arr*)</pre>
   </dd>
 
 </dl>
+
+<h2 id="Return_Value">Return Value</h2>
+<p>Type: <a href="../Concepts.htm#strings">String</a></p>
+<p>This function returns the formatted version of the specified string.</p>
 
 <h2 id="FormatSpec">Format Specifiers</h2>
 <p>Each format specifier can include the following components, in this order (without the spaces):</p>
@@ -50,7 +56,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <li><code>s</code>: <em>Precision</em> specifies the maximum number of characters to be printed. Characters in excess of this are not printed.</li>
   <li>For the integer types (<code>d</code>, <code>i</code>, <code>u</code>, <code>x</code>, <code>X</code>, <code>o</code>), <em>Precision</em> acts like <em>Width</em> with the <code class="no-highlight">0</code> prefix and a default of 1.</li>
 </ul>
-<p id="ULT"><b>ULT</b> <span class="ver">[v1.1.20+]</span>: Specifies a case transformation to apply to a string value -- <b>U</b>pper, <b>L</b>ower or <b>T</b>itle. Valid only with the <code>s</code> type. For example <code>{:U}</code> or <code>{:.20Ts}</code>. Lower-case <code>l</code> and <code>t</code> are also supported, but <code>u</code> is reserved for unsigned integers.</p>
+<p id="ULT"><strong>ULT:</strong> Specifies a case transformation to apply to a string value -- <b>U</b>pper, <b>L</b>ower or <b>T</b>itle. Valid only with the <code>s</code> type. For example <code>{:U}</code> or <code>{:.20Ts}</code>. Lower-case <code>l</code> and <code>t</code> are also supported, but <code>u</code> is reserved for unsigned integers.</p>
 <p><strong>Type:</strong> A character from the <a href="#Types">type table</a> below indicating how the input value should be interpreted. If omitted, it defaults to <code>s</code>.</p>
 
 <h2 id="Flags">Flags</h2>
@@ -111,7 +117,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <tr>
     <td><code>x</code> or <code>X</code></td>
     <td>Integer</td>
-    <td>Unsigned hexadecimal integer; uses "abcdef" or "ABCDEF" depending on the case of <code>x</code>. The <code class="no-highlight">0x</code> prefix is not included unless the <code>#</code> flag is used, as in <code>{:#x}</code>. For hexadecimal formatting consistent with <a href="SetFormat.htm">SetFormat</a>, use <code class="no-highlight">0x{:x}</code> or similar. For example, <code>Format("{:X}", 255)</code> returns <code>FF</code>.</td>
+    <td>Unsigned hexadecimal integer; uses "abcdef" or "ABCDEF" depending on the case of <code>x</code>. The <code class="no-highlight">0x</code> prefix is not included unless the <code>#</code> flag is used, as in <code>{:#x}</code>. To always include the prefix, use <code class="no-highlight">0x{:x}</code> or similar. For example, <code>Format("{:X}", 255)</code> returns <code>FF</code>.</td>
   </tr>
   <tr>
     <td><code>o</code></td>
@@ -126,7 +132,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <tr>
     <td><code>e</code></td>
     <td>Floating-point</td>
-    <td>Signed value that has the form [ - ]<em>d.dddd</em> e [<em>sign</em>]<em>dd[d]</em> where <em>d</em> is one decimal digit, <em>dddd</em> is one or more decimal digits, <em>dd[d]</em> is two or three decimal digits depending on the output format and size of the exponent, and <em>sign</em> is + or -. For example, <code>Format("{:e}", 255)</code> returns <code class="no-highlight">2.550000e+002</code>.</td>
+    <td>Signed value that has the form [ - ]<em>d.dddd</em> e [<em>sign</em>]<em>dd[d]</em> where <em>d</em> is one decimal digit, <em>dddd</em> is one or more decimal digits, <em>dd[d]</em> is two or three decimal digits depending on the output format and size of the exponent, and <em>sign</em> is + or -. For example, <code>Format("{:e}", 255)</code> returns <code class="no-highlight">2.550000e+02</code>.</td>
   </tr>
   <tr>
     <td><code>E</code></td>
@@ -146,7 +152,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <tr>
     <td><code>a</code></td>
     <td>Floating-point</td>
-    <td>Signed hexadecimal double-precision floating-point value that has the form [?]0x<em>h.hhhh</em> <strong>p</strong>&plusmn;<em>dd</em>, where <em>h.hhhh</em> are the hex digits (using lower case letters) of the mantissa, and <em>dd</em> are one or more digits for the exponent. The precision specifies the number of digits after the point. For example, <code>Format("{:a}", 255)</code> returns <code class="no-highlight">0x1.fe0000p+7</code>.</td>
+    <td>Signed hexadecimal double-precision floating-point value that has the form [?]0x<em>h.hhhh</em> <strong>p</strong>&plusmn;<em>dd</em>, where <em>h.hhhh</em> are the hex digits (using lower case letters) of the mantissa, and <em>dd</em> are one or more digits for the exponent. The precision specifies the number of digits after the point. For example, <code>Format("{:a}", 255)</code> returns <code class="no-highlight">0x1.fe00000000000p+7</code>.</td>
   </tr>
   <tr>
     <td><code>A</code></td>
@@ -156,12 +162,12 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <tr>
     <td><code>p</code></td>
     <td>Integer</td>
-    <td>Displays the argument as a memory address in hexadecimal digits. For example, <code>Format("{:p}", 255)</code> returns <code class="no-highlight">000000FF</code>.</td>
+    <td>Displays the argument as a memory address in hexadecimal digits. For example, <code>Format("{:p}", 255)</code> returns <code class="no-highlight">00000000000000FF</code>.</td>
   </tr>
   <tr>
     <td><code>s</code></td>
     <td>String</td>
-    <td>Specifies a string. If the input value is numeric, it is automatically converted to a string using the script's <a href="SetFormat.htm">current number format</a> before the <em>Width</em> and <em>Precision</em> arguments are applied.</td>
+    <td>Specifies a string. If the input value is numeric, it is automatically converted to a string before the <em>Width</em> and <em>Precision</em> arguments are applied.</td>
   </tr>
   <tr>
     <td><code>c</code></td>
@@ -174,12 +180,13 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
 <p>Unlike <a href="https://learn.microsoft.com/cpp/c-runtime-library/format-specification-syntax-printf-and-wprintf-functions">printf</a>, size specifiers are not supported. All integers and floating-point input values are 64-bit.</p>
 
 <h2 id="Related">Related</h2>
-<p><a href="SetFormat.htm">SetFormat</a>, <a href="FormatTime.htm">FormatTime</a></p>
+<p><a href="FormatTime.htm">FormatTime</a></p>
 
 <h2 id="Examples">Examples</h2>
 <div class="ex" id="ExBasic">
 <p><a class="ex_number" href="#ExBasic"></a> Demonstrates different usages.</p>
 <pre>
+s := ""
 <em>; Simple substitution</em>
 s .= Format("{2}, {1}!`r`n", "World", "Hello")
 <em>; Padding with spaces</em>
@@ -190,8 +197,8 @@ s .= Format("{1:#x} {2:X} 0x{3:x}`r`n", 3735928559, 195948557, 0)
 s .= Format("{1:0.3f} {1:.10f}", 4*ATan(1))
 
 ListVars  <em>; Use AutoHotkey's main window to display monospaced text.</em>
-WinWaitActive ahk_class AutoHotkey
-ControlSetText Edit1, %s%
+WinWaitActive "ahk_class AutoHotkey"
+ControlSetText(s, "Edit1")
 WinWaitClose
 </pre>
 </div>

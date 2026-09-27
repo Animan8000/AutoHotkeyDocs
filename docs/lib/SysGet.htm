@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>SysGet - Syntax &amp; Usage | AutoHotkey</title>
-<meta name="description" content="The SysGet command retrieves screen resolution, multi-monitor info, dimensions of system objects, and other system properties." />
+<title>SysGet - Syntax &amp; Usage | AutoHotkey v2</title>
+<meta name="description" content="The SysGet function retrieves dimensions of system objects, and other system properties." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link href="../static/theme.css" rel="stylesheet" type="text/css" />
@@ -12,55 +12,25 @@
 
 <h1>SysGet</h1>
 
-<p>Retrieves screen resolution, multi-monitor info, dimensions of system objects, and other system properties.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, <a href="#SubCommands">SubCommand</a> <span class="optional">, Value</span></pre>
-<p>The <em>OutputVar</em> parameter is the name of the output variable in which to store the result. The <em>SubCommand</em> and <em>Value</em> parameters are dependent upon each other and their usage is described below.</p>
+<p>Retrieves dimensions of system objects, and other system properties.</p>
 
-<h2 id="SubCommands">Sub-commands</h2>
-<p>For <em>SubCommand</em>, specify one of the following:</p>
-<ul>
-  <li><a href="#MonitorCount">MonitorCount</a>: Retrieves the total number of monitors.</li>
-  <li><a href="#MonitorPrimary">MonitorPrimary</a>: Retrieves the number of the primary monitor.</li>
-  <li><a href="#Monitor">Monitor</a>: Retrieves the bounding coordinates of the specified monitor.</li>
-  <li><a href="#MonitorWorkArea">MonitorWorkArea</a>: Retrieves the working area's bounding coordinates of the specified monitor.</li>
-  <li><a href="#MonitorName">MonitorName</a>: Retrieves the name of the specified monitor.</li>
-  <li><a href="#Numeric">(Numeric)</a>: Retrieve the corresponding value from the tables below.</li>
-</ul>
+<pre class="Syntax">Value := <span class="func">SysGet</span>(Property)</pre>
+<h2 id="Parameters">Parameters</h2>
+<dl>
 
-<h3 id="MonitorCount">MonitorCount</h3>
-<p>Retrieves the total number of monitors.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, MonitorCount</pre>
-<p>Unlike SM_CMONITORS mentioned in the table below, this sub-command includes all monitors, even those not being used as part of the desktop.</p>
+  <dt>Property</dt>
+  <dd>
+    <p>Type: <a href="../Concepts.htm#numbers">Integer</a></p>
+    <p>Specify one of the numbers from the tables below to retrieve the corresponding value.</p>
+  </dd>
 
-<h3 id="MonitorPrimary">MonitorPrimary</h3>
-<p>Retrieves the number of the primary monitor.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, MonitorPrimary</pre>
-<p>In a single-monitor system, this will be always 1.</p>
+</dl>
 
-<h3 id="Monitor">Monitor</h3>
-<p>Retrieves the bounding coordinates of monitor number <em>N</em>.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, Monitor <span class="optional">, N</span></pre>
-<p>If <em>N</em> is blank or omitted, the primary monitor is used. The information is stored in four variables whose names all start with <em>OutputVar</em>. If <em>N</em> is too high or there is a problem retrieving the info, the variables are all made blank. For example:</p>
-<pre>SysGet, Mon2, Monitor, 2
-MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2Bottom%.</pre>
-<p>Within a <a href="../Functions.htm">function</a>, to create a set of variables that is global instead of local, <a href="../Functions.htm#Global">declare</a> <em>Mon2</em> as a global variable prior to using this command (the converse is true for <a href="../Functions.htm#AssumeGlobal">assume-global</a> functions). However, it is often also necessary to declare each variable in the set, due to a <a href="../Functions.htm#ArrayConfusion">common source of confusion</a>.</p>
+<h2 id="Return_Value">Return Value</h2>
+<p>Type: <a href="../Concepts.htm#numbers">Integer</a></p>
+<p>This function returns the value of the specified system property.</p>
 
-<h3 id="MonitorWorkArea">MonitorWorkArea</h3>
-<p>Retrieves the working area's bounding coordinates of monitor number <em>N</em>.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, MonitorWorkArea <span class="optional">, N</span></pre>
-<p>Same as the <a href="#Monitor">Monitor sub-command</a> above except the area is reduced to exclude the area occupied by the taskbar and other registered desktop toolbars.</p>
-
-<h3 id="MonitorName">MonitorName</h3>
-<p>Retrieves the operating system's name of monitor number <em>N</em>.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, MonitorName <span class="optional">, N</span></pre>
-<p>If <em>N</em> is blank or omitted, the primary monitor is used.</p>
-
-<h3 id="Numeric">(Numeric)</h3>
-<p>Specify for <em>SubCommand</em> one of the numbers from the tables below to retrieve the corresponding value.</p>
-<pre class="Syntax"><span class="func">SysGet</span>, OutputVar, N</pre>
-<p>For example, <code>SysGet, MouseButtonCount, 43</code> would store the number of mouse buttons in a variable named MouseButtonCount.</p>
-
-<h4 id="Commonly_Used">Commonly Used</h4>
+<h2 id="Commonly_Used">Commonly Used</h2>
 <table class="info">
   <tr>
     <th>Number</th>
@@ -144,7 +114,7 @@ MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2
   </tr>
 </table>
 
-<h4 id="Not_Commonly_Used">Not Commonly Used</h4>
+<h2 id="Not_Commonly_Used">Not Commonly Used</h2>
 <table class="info">
   <tr>
     <th>Number</th>
@@ -162,7 +132,7 @@ MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2
         <li>1 = Fail-safe boot</li>
         <li>2 = Fail-safe with network boot</li>
       </ul>
-     </td>
+    </td>
   </tr>
   <tr>
     <td>5, 6</td>
@@ -218,7 +188,7 @@ MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2
   </tr>
   <tr>
     <td>47, 48</td>
-    <td>SM_CXMINSPACING SM_CYMINSPACING: Dimensions of a grid cell for a minimized window, in pixels. Each minimized window fits into a rectangle this size when arranged. These values are always greater than or equal to SM_CXMINIMIZED and SM_CYMINIMIZED.</td>
+    <td>SM_CXMINSPACING, SM_CYMINSPACING: Dimensions of a grid cell for a minimized window, in pixels. Each minimized window fits into a rectangle this size when arranged. These values are always greater than or equal to SM_CXMINIMIZED and SM_CYMINIMIZED.</td>
   </tr>
   <tr>
     <td>30, 31</td>
@@ -271,12 +241,7 @@ MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2
   <tr>
     <td>82</td>
     <td><p>SM_IMMENABLED: Nonzero if Input Method Manager/Input Method Editor features are enabled; zero otherwise.</p>
-      <p>SM_IMMENABLED indicates whether the system is ready to use a Unicode-based IME on a Unicode application. To ensure that a language-dependent IME works, check SM_DBCSENABLED and the system ANSI code page. Otherwise the ANSI-to-Unicode conversion may not be performed correctly, or some components like fonts or registry setting may not be present.</p>
-    </td>
-  </tr>
-  <tr>
-    <td>87</td>
-    <td>SM_MEDIACENTER: Nonzero if the current operating system is the Windows XP, Media Center Edition, zero if not.</td>
+        <p>SM_IMMENABLED indicates whether the system is ready to use a Unicode-based IME on a Unicode application. To ensure that a language-dependent IME works, check SM_DBCSENABLED and the system ANSI code page. Otherwise the ANSI-to-Unicode conversion may not be performed correctly, or some components like fonts or registry setting may not be present.</p></td>
   </tr>
   <tr>
     <td>40</td>
@@ -298,43 +263,23 @@ MsgBox, Left: %Mon2Left% -- Top: %Mon2Top% -- Right: %Mon2Right% -- Bottom %Mon2
     <td>81</td>
     <td>SM_SAMEDISPLAYFORMAT: Nonzero if all the display monitors have the same color format, zero otherwise. Note that two displays can have the same bit depth, but different color formats. For example, the red, green, and blue pixels can be encoded with different numbers of bits, or those bits can be located in different places in a pixel's color value.</td>
   </tr>
-  <tr>
-    <td>86</td>
-    <td>SM_TABLETPC: Nonzero if the current operating system is the Windows XP Tablet PC edition, zero if not.</td>
-  </tr>
 </table>
-
 <h2 id="Remarks">Remarks</h2>
-<p>The built-in variables <a href="../Variables.htm#Screen">A_ScreenWidth</a> and <a href="../Variables.htm#Screen">A_ScreenHeight</a> contain the dimensions of the primary monitor, in pixels.</p>
+<p>SysGet simply calls the <a href="https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics">GetSystemMetrics</a> function, which may support more system properties than are documented here.</p>
 
 <h2 id="Related">Related</h2>
-<p><a href="DllCall.htm">DllCall()</a>, <a href="WinGet.htm">WinGet</a></p>
+<p><a href="DllCall.htm">DllCall</a>, <a href="Win.htm">Win functions</a>, <a href="Monitor.htm">Monitor functions</a></p>
 
 <h2 id="Examples">Examples</h2>
-
 <div class="ex" id="ExBasic">
 <p><a class="ex_number" href="#ExBasic"></a> Retrieves the number of mouse buttons and stores it in <var>MouseButtonCount</var>.</p>
-<pre>SysGet, MouseButtonCount, 43</pre>
+<pre>MouseButtonCount := SysGet(43)</pre>
 </div>
 
 <div class="ex" id="ExVirtScreenWH">
 <p><a class="ex_number" href="#ExVirtScreenWH"></a> Retrieves the width and height of the virtual screen and stores them in <var>VirtualScreenWidth</var> and <var>VirtualScreenHeight</var>.</p>
-<pre>SysGet, VirtualScreenWidth, 78
-SysGet, VirtualScreenHeight, 79</pre>
-</div>
-
-<div class="ex" id="ExMonitor">
-<p><a class="ex_number" href="#ExMonitor"></a> Displays info about each monitor.</p>
-<pre>SysGet, MonitorCount, MonitorCount
-SysGet, MonitorPrimary, MonitorPrimary
-MsgBox, Monitor Count:`t%MonitorCount%`nPrimary Monitor:`t%MonitorPrimary%
-Loop, %MonitorCount%
-{
-    SysGet, MonitorName, MonitorName, %A_Index%
-    SysGet, Monitor, Monitor, %A_Index%
-    SysGet, MonitorWorkArea, MonitorWorkArea, %A_Index%
-    MsgBox, Monitor:`t#%A_Index%`nName:`t%MonitorName%`nLeft:`t%MonitorLeft% (%MonitorWorkAreaLeft% work)`nTop:`t%MonitorTop% (%MonitorWorkAreaTop% work)`nRight:`t%MonitorRight% (%MonitorWorkAreaRight% work)`nBottom:`t%MonitorBottom% (%MonitorWorkAreaBottom% work)
-}</pre>
+<pre>VirtualScreenWidth := SysGet(78)
+VirtualScreenHeight := SysGet(79)</pre>
 </div>
 
 </body>

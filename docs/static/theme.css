@@ -106,14 +106,14 @@ color:#605428
 
 .Syntax span.optional:before {
 content:"[";
-color:#ff8000;
+color:orange;
 font:130% serif;
 line-height:0
 }
 
 .Syntax span.optional:after {
 content:"]";
-color:#ff8000;
+color:orange;
 font:130% serif;
 line-height:0
 }
@@ -249,6 +249,13 @@ color:#C05500;
 padding:.5em 1em
 }
 
+blockquote {
+border-left:2px solid #4080f0;
+background-color:#f8f8f8;
+margin:.7em 1.5em;
+padding:.7em 0 .7em .7em;
+}
+
 /* styles for briefly documenting multiple methods on one page: */
 
 .methodShort {
@@ -263,11 +270,16 @@ color: inherit;
 border-bottom: 0;
 }
 
+.methodShort h4 {
+margin-bottom: -.1em;
+margin-top: -.1em;
+}
+
 .methodShort table.info {
 border:none
 }
 
-.methodShort table.info td {
+.methodShort > table.info td {
 border:none;
 vertical-align:text-top
 }
@@ -276,7 +288,7 @@ vertical-align:text-top
 border-color: inherit;
 }
 
-/* command parameters */
+/* function parameters */
 
 dt { /* param name */
 color:#3F5770;
